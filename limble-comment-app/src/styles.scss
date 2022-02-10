@@ -1,1 +1,73 @@
 /* You can add global styles to this file, and also import other style files */
+
+
+/*** COLORS ***/
+$button-color-1: #e6e7e8;
+$button-color-1-on-hover: #dbddde;
+$text-color: #353535;
+$button-color-2: #419b1f;
+$background-color: #ffffff;
+$timestamp-color: #909090;
+
+/*** Fonts ***/
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+$text-font: 'Roboto', sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap');
+$header-font: 'Open Sans', sans-serif;
+/* Get rid of the margin */ 
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    background-color: #373737;
+}
+
+.content {
+    background-color: $background-color;
+    width: 50%;
+    margin: 0 auto;
+    margin-top: 5%;
+    padding: 10px;
+}
+
+h3 {
+    color: $text-color;
+    font-family: $header-font;
+}
+
+.comment-text {
+    color: $text-color;
+    font-family: $text-font;
+}
+
+.timestamp {
+    color: $timestamp-color;
+    font-family: $text-font;
+}
+
+.comment-div {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid $timestamp-color;
+}
+
+.button-1 {
+    background-color: $button-color-1;
+    color: $text-color;
+    font-family: $text-font;
+    padding: 5px;
+    border-radius: 25px;
+    box-shadow: 0 2px 3px #00000029, 0 1px 2px #0000003b;
+    border-width: 0px;
+    width: 150px;
+    margin-top: 15px;
+    transition: background-color .3s;
+}
+
+.button-1:hover {
+    background-color: $button-color-1-on-hover;
+    cursor: pointer;
+}
