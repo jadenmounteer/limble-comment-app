@@ -120,4 +120,12 @@ export class CommentsService {
     return `${year}/${convertedMonth}/${convertedDay} ${convertedHour}:${convertedMinutes} ${amOrpm}`;
   }
 
+  /**
+   * Gets and returns a list of users from the JSON database
+   * TODO: This will acutally return something like: Array<any> or Array<user>. Might want to make a user interface.
+   */
+  getUsers(): void{
+    
+  }
+
 }

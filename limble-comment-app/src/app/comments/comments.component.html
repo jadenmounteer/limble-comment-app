@@ -27,9 +27,7 @@
         <textarea name="new-comment" id="new-comment-text-area" cols="30" rows="10" (keyup)="listenCommentInput($event)" [value]="newCommentValue"></textarea>
         -->
         <!-- NEW custom text area -->
-        <div class="text-box-div" contentEditable="true" type="text" (keyup)="listenCommentInput($event)" [textContent]="newCommentValue">
-        </div>
-        
+        <div class="text-box-div" id="new-comment-text-box-div" contenteditable (keyup)="listenCommentInput($event)" [textContent]="newCommentValue"></div>
     </div>
 
     

@@ -51,17 +51,31 @@ export class CommentsComponent implements OnInit {
 
   /**
    * Adds the mention symbol to the text area.
+   * Makes the cursor go to the end of the text.
    * Call the mention someone method.
    */
   addMentionSymbol() {
-    // Add the mention symbol to the text area
-    //console.log(`The new comment value is: ${this.newCommentValue}`);
-    this.newCommentValue += "@";
-    // Give the text area focus
-    document.getElementById("new-comment-text-area")?.focus();
-    
-    // TODO: Call the mention someone method
+    // Select the text area
+    const textArea = document.getElementById("new-comment-text-box-div")!;
 
+    // Add the @ symbol to the text content of the text area and to the newCommentValue property
+    textArea.textContent += "@";
+    this.newCommentValue += "@";
+
+    // Here, we work some magic to make sure the cursor is not set back to the beginning of the textarea
+    // Inspired by this blog: https://thewebdev.info/2021/05/01/how-to-set-the-cursor-position-on-contenteditable-div-with-javascript/
+    const selection = window.getSelection();  
+    const range = document.createRange();  
+    selection?.removeAllRanges();  
+    range.selectNodeContents(textArea);  
+    range.collapse(false);  
+    selection?.addRange(range);  
+
+    // Finally, we focus on the textArea field
+    textArea.focus();
+    
+    // Call the mention someone method
+    this.mentionSomeone();
   }
 
   /**
@@ -73,6 +87,13 @@ export class CommentsComponent implements OnInit {
     this.commentsService.addComment(this.newCommentValue);
     // Clear the text area of text
     this.newCommentValue = "";
+  }
+
+  mentionSomeone() {
+    // Gets the list of users from the service
+    let listOfUsers = this.commentsService.getUsers();
+
+    // Now that we have the list of users, do something with it
   }
 
 }
