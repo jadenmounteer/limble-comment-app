@@ -14,7 +14,6 @@ export class CommentsComponent implements OnInit {
   commentsService: CommentsService;
   showFancyText: boolean = false;
   comments: Array<Comment> = [];
-  buttonValue: string = "Submit";
   newCommentValue: string = "";
 
   constructor(commentsService: CommentsService) {
@@ -42,19 +41,37 @@ export class CommentsComponent implements OnInit {
    listenCommentInput($event: KeyboardEvent): void {
      // Grab the new comment value
      let value = (<HTMLInputElement>$event.target).value;
-     console.log("your comment is: " + value);
+     //console.log("your comment is: " + value);
      // Add the new value to the property
      this.newCommentValue = value;
-     // TODO: Check if the user typedL @
+     // TODO: Check if the user typed @
+     // If so, call the mention someone method
   }
 
+  /**
+   * Adds the mention symbol to the text area.
+   * Call the mention someone method.
+   */
   addMentionSymbol() {
     // Add the mention symbol to the text area
-    console.log(`The new comment value is: ${this.newCommentValue}`);
+    //console.log(`The new comment value is: ${this.newCommentValue}`);
     this.newCommentValue += "@";
     // Give the text area focus
     document.getElementById("new-comment-text-area")?.focus();
+    
+    // TODO: Call the mention someone method
 
+  }
+
+  /**
+   * Listens to see if the user clicked on the submit button.
+   */
+  listenSubmitButton() {
+    // Call the addComment method from the comments service
+    // Pass the textarea value in as an argument
+    this.commentsService.addComment(this.newCommentValue);
+    // Clear the text area of text
+    this.newCommentValue = "";
   }
 
 }

@@ -25,7 +25,14 @@
         <p class="comment-text"> Please enter what you would like to say</p>
         <textarea name="new-comment" id="new-comment-text-area" cols="30" rows="10" (keyup)="listenCommentInput($event)" [value]="newCommentValue"></textarea>
     </div>
+
+    <!-- NEW custom text area -->
+    <div class="text-box-div" contentEditable="true" type="text">
+    </div>
     
+
+
+
     <div class="footer-flexbox">
         <div class="tooltip">
             <div class="mention-symbol" id="mention-symbol" (click)="addMentionSymbol()">&#x40;</div>
@@ -34,7 +41,7 @@
             </span>
         </div>
         <div class="add-new-comment-button-div">
-            <button class="button-2">{{buttonValue}}</button>
+            <button class="button-2" (click)="listenSubmitButton()">Submit</button>
             <button class="button-1">Cancel</button>
         </div>
     </div>

@@ -26,8 +26,23 @@ export class CommentsService {
     return this.comments;
   }
 
-  addComment(): void {
+  /**
+   * Called when the user selects the Submit button.
+   * @param textAreaValue
+   */
+  addComment(textAreaValue: string): void {
+    console.log("Adding comment!");
+    console.log(`looks like the value is: ${textAreaValue}`);
+    // Create a new comment and add the comment along with the username
+    // Add the timestamp
+    let newComment = {
+      "comment": textAreaValue,
+      "userName": "Wanda Maximoff",
+      "createdDate": "2022/02/03 12:15 AM" // TODO: Create a timestamp method
+    }
 
+    // Add the new comment to the list of new comments
+    this.comments.push(newComment);    
   }
 
 }

@@ -1,0 +1,16 @@
+.text-box-div {
+    font-family: $text-font;
+    margin-top: 20px;
+    margin-top: 10px;
+    width:100%;
+    min-height: 150px;
+    border: 1px solid #ddd;
+    transition: border-color .5s;
+    outline: none; // Remove the outline
+    resize: none; // Remove the resize handle
+    overflow: auto; // Remove default scroll bars in Internet Explorer
+}
+
+.text-box-div:focus {
+    border-color: #419b1f;
+}
