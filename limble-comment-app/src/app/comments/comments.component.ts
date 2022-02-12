@@ -40,8 +40,9 @@ export class CommentsComponent implements OnInit {
    */
    listenCommentInput($event: KeyboardEvent): void {
      // Grab the new comment value
-     let value = (<HTMLInputElement>$event.target).value;
-     //console.log("your comment is: " + value);
+     // typecast it as a string so we can pass it into the property
+     let value = (<HTMLInputElement>$event.target).textContent as string;
+     //console.log(`User is typing ${value} into text area`);
      // Add the new value to the property
      this.newCommentValue = value;
      // TODO: Check if the user typed @

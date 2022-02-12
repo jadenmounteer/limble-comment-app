@@ -23,12 +23,16 @@
     </div>
     <div class="enter-text-div">
         <p class="comment-text"> Please enter what you would like to say</p>
+        <!--
         <textarea name="new-comment" id="new-comment-text-area" cols="30" rows="10" (keyup)="listenCommentInput($event)" [value]="newCommentValue"></textarea>
+        -->
+        <!-- NEW custom text area -->
+        <div class="text-box-div" contentEditable="true" type="text" (keyup)="listenCommentInput($event)" [textContent]="newCommentValue">
+        </div>
+        
     </div>
 
-    <!-- NEW custom text area -->
-    <div class="text-box-div" contentEditable="true" type="text">
-    </div>
+    
     
 
 
