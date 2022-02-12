@@ -3,18 +3,19 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CommentsSectionModule } from './comments-section/comments-section.module';
+import { CommentsComponent } from './comments/comments.component';
+
 
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    CommentsComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
-    CommentsSectionModule
+    AppRoutingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
