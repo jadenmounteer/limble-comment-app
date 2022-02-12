@@ -1,4 +1,28 @@
-<!--
-<p>add-new-comment works!</p>
--->
+<section class="new-comments-section modal-content">
+    <div class="modal-content-header-div">
+        <h3>Add Comment</h3>
+        <div class="x-symbol">
+            &#x2715;
+        </div>
+    </div>
+    <div class="enter-text-div">
+        <p class="comment-text"> Please enter what you would like to say</p>
 
+        <textarea name="new-comment" id="new-comment-text-area" cols="30" rows="10" (keyup)="listenCommentInput($event)"></textarea>
+        
+    </div>
+    
+    <div class="footer-flexbox">
+        <div class="tooltip">
+            <div class="mention-symbol" id="mention-symbol">&#x40;</div>
+            <span class="tooltiptext comment-text">
+                Mention someone
+            </span>
+        </div>
+        <div class="add-new-comment-button-div">
+            <button class="button-2">{{buttonValue}}</button>
+            <button class="button-1">Cancel</button>
+        </div>
+    </div>
+    
+</section>

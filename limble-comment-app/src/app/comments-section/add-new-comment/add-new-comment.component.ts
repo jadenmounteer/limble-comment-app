@@ -7,9 +7,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AddNewCommentComponent implements OnInit {
 
+  buttonValue: string = "test";  
+
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  /**
+   * Listens to the text area input
+   * @param $event 
+   */
+  listenCommentInput($event: KeyboardEvent): void {
+    let value = (<HTMLInputElement>$event.target).value;
+    console.log("your comment is: " + value);
   }
 
 }

@@ -1,0 +1,22 @@
+.content {
+    width: 95%;
+    margin: 0 auto;
+    
+    // When the screen is medium
+    @include breakpoint(medium) {
+        // Make the content take up 80% of the screen
+        width: 80%;
+      }
+    // When the screen is large
+    @include breakpoint(large) {
+        // Make the content take up 50% of the screen
+        width: 50%;
+      }
+}
+
+.modal-content {
+  padding: 10px;
+  margin-top: 5%;
+  background-color: $background-color;
+  box-shadow: 0 5px 15px #00000080;
+}

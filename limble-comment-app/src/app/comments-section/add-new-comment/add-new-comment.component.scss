@@ -1,0 +1,100 @@
+.add-new-comment-button-div {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: -15px;
+}
+
+.modal-content-header-div {
+    height: 35px;
+    border-bottom: 2px solid #419b1f;
+    display: flex;
+    justify-content: space-between;
+}
+
+.enter-text-div p {
+    margin-top: 20px;
+}
+
+.text-area-div, #new-comment-text-area {
+    margin-top: 10px;
+    width:100%;
+    min-height: 150px;
+    border: 1px solid #ddd;
+    transition: border-color .5s;
+    outline: none; // Remove the outline
+    resize: none; // Remove the resize handle
+    overflow: auto; // Remove default scroll bars in Internet Explorer
+}
+
+#new-comment-text-area:focus {
+    border-color: #419b1f;
+}
+
+
+.x-symbol, .mention-symbol {
+   color: #afafafec;
+   font-size: 1.4em;
+   transition: color .2s, background-color .2s;
+}
+
+.x-symbol:hover, .mention-symbol:hover {
+    color: #3d3d3d;
+    cursor: pointer;
+ }
+ 
+ .mention-symbol:hover {
+     background-color: #f8f7f7;
+ }
+
+ .mention-symbol {
+     max-height: 25px;
+     padding-left: 2px;
+     padding-right: 2px;
+ }
+
+ .footer-flexbox {
+     display: flex;
+     justify-content: space-between;
+     margin-top: 5px;
+     margin-bottom: 10px;
+ }
+
+ /*** Style the tooltip ***/
+
+ .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%;
+    left: 50%;
+    margin-left: -60px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  
+  .tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+  }
+  
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+  }

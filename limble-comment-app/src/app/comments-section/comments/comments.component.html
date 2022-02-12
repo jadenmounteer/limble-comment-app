@@ -1,18 +1,13 @@
-<section class="comments-section">
+<section class="comments-section modal-content">
     <h3>Comments:</h3>
-    <div class="list-of-comments">
+    <span *ngIf="getShowFancyText()" class="comment-text">This is a fancy text</span>
+    <div class="list-of-comments" *ngFor="let comment of comments">
         <div class="comment-div">
-            <span class="comment-text">This task was assigned to Morning Team</span>
-            <span class="timestamp">Wanda Maximoff - 2022/02/03 12:15 AM</span>
-        </div>
-        <div class="comment-div">
-            <span class="comment-text">This Task's Status was changed from Open to In Progress</span>
-            <span class="timestamp">Wanda Maximoff - 2022/02/03 12:15 AM</span>
+            <span class="comment-text">{{comment.comment}}}</span>
+            <span class="timestamp">{{comment.userName}} - {{comment.createdDate}}</span>
         </div>
     </div>
     <div class="add-comment-button-div">
-        <button class="button-1">Add Comment</button>
+        <button class="button-1" (click)="addComment()" >Add Comment</button>
     </div>
-    
-    
 </section>
