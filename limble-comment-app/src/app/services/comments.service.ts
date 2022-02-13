@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Comment } from '../app-interfaces/comments.interface';
+import { User } from '../app-interfaces/user.interface';
+import { AjaxHelperService } from './ajax-helper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentsService {
+
+  ajaxHelperService: AjaxHelperService;
 
   comments: Array<Comment> = [
     {
@@ -19,7 +23,17 @@ export class CommentsService {
     }
   ];
 
-  constructor() { }
+  users: Array<User> = [
+    {'userID' : 1, 'name' : 'Kevin'},
+    {'userID' : 2, 'name' : 'Jeff'},
+    {'userID' : 3, 'name' : 'Bryan'},
+    {'userID' : 4, 'name' : 'Gabbey'}
+  ];
+
+  constructor(ajaxHelperService: AjaxHelperService) { 
+    // Create a new instance of the ajaxHelperService so we can work with JSON
+    this.ajaxHelperService = ajaxHelperService;
+  }
 
   getAllComments(): Array<Comment> {
     // TODO: return a clone of this object.. this object cannot be changed from other places
@@ -124,8 +138,29 @@ export class CommentsService {
    * Gets and returns a list of users from the JSON database
    * TODO: This will acutally return something like: Array<any> or Array<user>. Might want to make a user interface.
    */
-  getUsers(): void{
+  getUsers(): Array<User>{
+    return this.users;
+
+
+    //TODO: maybe get this from the json
+
+    /*
+    // User the ajaxHelperService to fetch the data from the json database
+    const getlistOfUsers = this.ajaxHelperService.fetchJSON("/users.json");
+    console.log("Processing...");
     
+    // Once the promise is finished...
+    getlistOfUsers.then(
+      // If it was successful...
+      function(value){
+        console.log("Promise complete");
+        console.log(value);
+      },
+      function(error){console.log(`Error! ${error}`);}
+    )
+    */
+
+
   }
 
 }

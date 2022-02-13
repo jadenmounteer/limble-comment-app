@@ -1,0 +1,22 @@
+.user-list-div {
+    border: 1px solid $timestamp-color;
+    max-width: 300px;
+    max-height: 100px;
+    overflow: hidden;
+    overflow-y: auto; // Add a scrollbar 
+    font-family: $text-font;
+}
+
+.list-of-users {
+    list-style-type: none;
+    
+}
+
+.user-item {
+    padding: .5em;
+}
+
+.user-item:hover {
+    cursor: pointer;
+    background-color: #f1f1f1;
+}
