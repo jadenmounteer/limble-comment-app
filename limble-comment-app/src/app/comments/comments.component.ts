@@ -55,6 +55,7 @@ export class CommentsComponent implements OnInit {
 
      // If the last character typed is a @...
      if (lastCharacterTyped == "@") {
+       
        // Call the mentionSomeone() method
        this.mentionSomeone();
      }
@@ -89,8 +90,8 @@ export class CommentsComponent implements OnInit {
     if (!this.justMentionedSomeone && lastCharacterTyped != "@") {
       
       // Add the @ symbol to the text content of the text area and to the newCommentValue property
-      textArea.textContent += "@";
-      this.newCommentValue += "@";
+      //textArea.textContent += "@";
+      //this.newCommentValue += "@";
 
       // Set the property so we know the user just tried to mention someone
       this.justMentionedSomeone = true;
@@ -137,7 +138,7 @@ export class CommentsComponent implements OnInit {
   mentionSomeone() {
     // Gets the list of users from the service
     let listOfUsers = this.commentsService.getUsers();
-    console.log(listOfUsers);
+
     // Add the list of users retrieved from the service to the list of users to display
     this.users = listOfUsers;
     
@@ -155,13 +156,26 @@ export class CommentsComponent implements OnInit {
    * @param $event 
    */
   chooseIndividualToMention($event: MouseEvent) {
+    // Remove the previous @ symbol
+    //this.newCommentValue = this.newCommentValue.substring(0, this.newCommentValue.length - 1);
+
     // Grab the user name
     let value = (<HTMLInputElement>$event.target).textContent as string;
     // Trim the value just in case there is any spacing
     let trimmedValue = value.trim();
-    
-    // Add the user name to the new comment text
-    this.newCommentValue += `<span>${trimmedValue}</span>`; 
+
+    // Create a new span element
+    const newSpan = document.createElement("span");
+    // Add the username to the span element along with the new @ symbol
+    newSpan.innerHTML = "@" + trimmedValue;
+    // Create a new attribute
+    const newAttribute = document.createAttribute("class");
+    // Give the new attribute a value
+    newAttribute.value = "mentioned-username";
+    // Add the attribute to the new span
+    newSpan.setAttributeNode(newAttribute);
+    // Add the span element to the text area
+    document.getElementById("new-comment-text-box-div")?.appendChild(newSpan);
 
   }
 
