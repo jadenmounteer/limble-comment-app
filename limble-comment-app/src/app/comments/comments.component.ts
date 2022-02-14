@@ -20,8 +20,7 @@ export class CommentsComponent implements OnInit {
   comments: Array<Comment> = []; // Used to store the comments.
   users: Array<User> = []; // This is where the list of users are stored
   newCommentValue: string = ""; // Here, we keep track of the new comment value so we know what the user last typed
-  justMentionedSomeone = false; // Used to track if the user just tried to mention someone using the mention button
-
+  justMentionedSomeone:boolean = false; // Used to track if the user just tried to mention someone using the mention button
 
   constructor(commentsService: CommentsService) {
     // Create a commentService object so we can retrieve and add comments
@@ -75,10 +74,23 @@ export class CommentsComponent implements OnInit {
     }
 
     // Else, if the user typed a space or, if they erased everything
-    else if (this.spaceKeyRegEx.test(lastCharacterTyped) || (value.length == 0)) {
+    else if (/^\s+$/.test(lastCharacterTyped) || (value.length == 0)) {
       // Remove the mentionSomeone menu
       this.hideListOfUsers();
-      // TODO: Remove the span element
+      // Refocus on the text area
+      this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
+      
+    }
+    else {
+      // Remove the mentionSomeone menu
+      this.hideListOfUsers();
+      // If there is a <br> in the html
+      if (value =="<br>") {
+        // Remove the break
+        document.getElementById("new-comment-text-box-div")!.innerHTML = "";
+        // Refocus on the text are/
+        this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
+      }
     }
      
   }
