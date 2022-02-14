@@ -1,18 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Comment } from '../app-interfaces/comments.interface';
 import { User } from '../app-interfaces/user.interface';
-import { AjaxHelperService } from './ajax-helper.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CommentsService {
 
-  ajaxHelperService: AjaxHelperService;
-
+  // An array to house the initial comments. 
+  // In Production this would come from a database.
   comments: Array<Comment> = [
     {
-      "comment": "This task was assigned to Morning Team",
+      "comment": "Task was assigned to unassigned",
       "userName": "Wanda Maximoff",
       "createdDate": "2022/02/03 12:15 AM"
     },
@@ -23,6 +22,8 @@ export class CommentsService {
     }
   ];
 
+  // An array to house the users.
+  // In Production this would come from a database.
   users: Array<User> = [
     {'userID' : 1, 'name' : 'Kevin'},
     {'userID' : 2, 'name' : 'Jeff'},
@@ -30,18 +31,21 @@ export class CommentsService {
     {'userID' : 4, 'name' : 'Gabbey'}
   ];
 
-  constructor(ajaxHelperService: AjaxHelperService) { 
-    // Create a new instance of the ajaxHelperService so we can work with JSON
-    this.ajaxHelperService = ajaxHelperService;
-  }
+  constructor() { }
 
+  /**
+   * Gets the list of comments 
+   * @returns the list of comments
+   */
   getAllComments(): Array<Comment> {
     // TODO: return a clone of this object.. this object cannot be changed from other places
     return this.comments;
   }
 
+
   /**
    * Called when the user selects the Submit button.
+   * Creates a new comment and adds it to the list.
    * @param textAreaValue
    */
   addComment(textAreaValue: string): void {
@@ -55,6 +59,7 @@ export class CommentsService {
     // Add the new comment to the list of new comments
     this.comments.push(newComment);    
   }
+
 
   /**
    * Generates a timestamp using the current date and time.
@@ -134,33 +139,14 @@ export class CommentsService {
     return `${year}/${convertedMonth}/${convertedDay} ${convertedHour}:${convertedMinutes} ${amOrpm}`;
   }
 
+
   /**
-   * Gets and returns a list of users from the JSON database
-   * TODO: This will acutally return something like: Array<any> or Array<user>. Might want to make a user interface.
+   * Gets and returns a list of users.
+   * @returns A list of users
    */
   getUsers(): Array<User>{
+    // TODO: Return a clone so the data cannot be changed from other places.
     return this.users;
-
-
-    //TODO: maybe get this from the json
-
-    /*
-    // User the ajaxHelperService to fetch the data from the json database
-    const getlistOfUsers = this.ajaxHelperService.fetchJSON("/users.json");
-    console.log("Processing...");
-    
-    // Once the promise is finished...
-    getlistOfUsers.then(
-      // If it was successful...
-      function(value){
-        console.log("Promise complete");
-        console.log(value);
-      },
-      function(error){console.log(`Error! ${error}`);}
-    )
-    */
-
-
   }
 
 }

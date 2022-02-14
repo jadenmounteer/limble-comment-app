@@ -12,32 +12,46 @@ import { User } from 'src/app/app-interfaces/user.interface';
 })
 export class CommentsComponent implements OnInit {
 
-  spaceKeyRegEx = /^\s+$/;
-  commentsService: CommentsService;
+  // PROPERTIES
+  spaceKeyRegEx: RegExp = /^\s+$/; // A regular expression used to track the space key
+  commentsService: CommentsService; // // The comments service so we can update our comments
   showListOfUsers: boolean = false; // used to track if we should show the list of users so the user can mention someone
-  showFancyText: boolean = false;
-  comments: Array<Comment> = [];
+  showAddCommentSection: boolean = false; // Used to show/hide the Add New Comment section
+  comments: Array<Comment> = []; // Used to store the comments.
   users: Array<User> = []; // This is where the list of users are stored
-  newCommentValue: string = "";
-  justMentionedSomeone = false; // Used to track if the user just tried to mention someone
-  justClickedAName = false;
+  newCommentValue: string = ""; // Here, we keep track of the new comment value so we know what the user last typed
+  justMentionedSomeone = false; // Used to track if the user just tried to mention someone using the mention button
+
 
   constructor(commentsService: CommentsService) {
     // Create a commentService object so we can retrieve and add comments
     this.commentsService = commentsService;
   }
 
+
   ngOnInit(): void {
+    // Get the comments from the service
     this.comments = this.commentsService.getAllComments();
   }
 
+
+  /**
+   * Called when the user clicks on the add comment button.
+   * Shows or hides the add comment section.
+   */
   addComment(): void {
-    this.showFancyText = !this.showFancyText;
+    this.showAddCommentSection = !this.showAddCommentSection;
   }
 
-  getShowFancyText(): boolean {
-    return this.showFancyText;
+
+  /**
+   * Gets whether we should show or hide the add new comment section.
+   * @returns this.showAddCommentSection
+   */
+  getShowAddCommentSection(): boolean {
+    return this.showAddCommentSection;
   }
+
 
   /**
    * Listens to the text area input.
@@ -45,15 +59,13 @@ export class CommentsComponent implements OnInit {
    * @param $event 
    */
    listenCommentInput($event: KeyboardEvent): void {
-     
     // Grab the new comment value
-    // typecast it as a string so we can pass it into the property
     let value = (<HTMLInputElement>$event.target).innerHTML;
 
-    // Add the new value to the property
+    // Add the new value to the property so we can track it
     this.newCommentValue = value;
     
-    // Check the last character the user typed...
+    // Get the last character the user typed
     let lastCharacterTyped = value[value.length - 1];
 
     // If the last character typed is a @...
@@ -62,23 +74,22 @@ export class CommentsComponent implements OnInit {
       this.mentionSomeone();
     }
 
-    // Else, if the user typed a space...
-    // Or, if they erased everything
+    // Else, if the user typed a space or, if they erased everything
     else if (this.spaceKeyRegEx.test(lastCharacterTyped) || (value.length == 0)) {
-
       // Remove the mentionSomeone menu
-      this.hideListOfUsers();   
-
+      this.hideListOfUsers();
+      // TODO: Remove the span element
     }
      
   }
+
 
   /**
    * Adds the mention symbol to the text area.
    * Makes the cursor go to the end of the text.
    * Call the mention someone method.
    */
-  addMentionSymbol() {
+  addMentionSymbol(): void {
     // Grab the last character typed
     let lastCharacterTyped = this.newCommentValue[this.newCommentValue.length - 1];
 
@@ -100,46 +111,46 @@ export class CommentsComponent implements OnInit {
 
     // If they have already tried to mention someone and the menu is visible...
     else if(this.justMentionedSomeone && this.showListOfUsers) {
+      // Set justMentionedSomeone to false so we do not create another @
       this.justMentionedSomeone = false;
+      // Hide the list of users
       this.hideListOfUsers();
     }
     else {
+      // Add another @ symbol
+      textArea.innerHTML += "@";
+      // Set the property so we know the user just tried to mention someone
       this.justMentionedSomeone = true;
+      // Show the mention someone menu
       this.mentionSomeone();
     }
 
-    // Here, we work some magic to make sure the cursor is not set back to the beginning of the textarea
-    // Inspired by this blog: https://thewebdev.info/2021/05/01/how-to-set-the-cursor-position-on-contenteditable-div-with-javascript/
-    const selection = window.getSelection();  
-    const range = document.createRange();  
-    selection?.removeAllRanges();  
-    range.selectNodeContents(textArea);  
-    range.collapse(false);  
-    selection?.addRange(range);  
-
-    // Finally, we focus on the textArea field
-    textArea.focus();
+    // Focus on the text area
+    this.focusOnTextArea(textArea);
     
   }
 
+
   /**
    * Listens to see if the user clicked on the submit button.
+   * Calls the addComment method from the service.
    */
-  listenSubmitButton() {
+  listenSubmitButton(): void {
     // Call the addComment method from the comments service
-    // Pass the textarea value in as an argument
-    //this.commentsService.addComment(this.newCommentValue);
     let textArea = document.getElementById("new-comment-text-box-div")!.innerHTML;
     this.commentsService.addComment(textArea);
-    // Clear the text area of text
-    //this.newCommentValue = "";
-    textArea = "submitted";
+  
+    // Hide the add comment section
+    this.addComment();
   }
+
 
   /**
    * Called when the last character the user typed is an @ symbol.
+   * Gets the list of users and shows them to the user.
+   * TODO: Include a sort function to sort according to the user's input.
    */
-  mentionSomeone() {
+  mentionSomeone(): void {
     // Gets the list of users from the service
     let listOfUsers = this.commentsService.getUsers();
 
@@ -153,9 +164,14 @@ export class CommentsComponent implements OnInit {
 
   }
 
+
+  /**
+   * Hides the list of users.
+   */
   hideListOfUsers(): void {
     this.showListOfUsers = false;
   }
+
 
   /**
    * Called when the user clicks on a user's name.
@@ -163,22 +179,21 @@ export class CommentsComponent implements OnInit {
    * Updates the properties accordingly. 
    * @param $event 
    */
-  chooseIndividualToMention($event: MouseEvent) {
-    // TODO: Remove the previous @ symbol
-    //this.newCommentValue = this.newCommentValue.substring(0, this.newCommentValue.length - 1);
-    //let textAreaValue  = document.getElementById('new-comment-text-box-div')?.textContent as string;
-    //document.getElementById('new-comment-text-box-div').textContent=textAreaValue.substring(0,textAreaValue.length -1)!;
+  chooseIndividualToMention($event: MouseEvent): void {
+    // Remove the previous @ symbol
+    let textAreaValue  = document.getElementById('new-comment-text-box-div')?.innerHTML as string;
+    document.getElementById('new-comment-text-box-div')!.innerHTML=textAreaValue.substring(0,textAreaValue.length -1)!;
 
     // Grab the user name
     let value = (<HTMLInputElement>$event.target).textContent;
-    // Trim the value just in case there is any spacing
-    //let trimmedValue = value.trim();
 
+    // Trim the user name of leading and ending whitespace
+    let trimmedValue = value?.trim();
+    
     // Create a new span element for the mention someone name
     const newSpan = document.createElement("span");
     // Add the username to the span element along with the new @ symbol
-    //newSpan.innerHTML = "@" + value;
-    newSpan.innerHTML = value as string;
+    newSpan.innerHTML = "@" + trimmedValue;
     // Create a new attribute
     const newAttribute = document.createAttribute("class");
     // Give the new attribute a value
@@ -187,22 +202,35 @@ export class CommentsComponent implements OnInit {
     newSpan.setAttributeNode(newAttribute);
     // Add the span element to the text area
     document.getElementById("new-comment-text-box-div")?.appendChild(newSpan);
+
+    // Add a space after the new span
     document.getElementById("new-comment-text-box-div")!.innerHTML += "&nbsp;";
+
     // Hide the list of users
     this.hideListOfUsers();
 
-    // Update the new comment value
-    //this.newCommentValue
+    // Focus on the text area
+    this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
 
-    // Create a new span element for the rest of the text
-    //const newSpan2 = document.createElement("span");
-
-
-   
-
-    
+  }
 
 
+  /**
+   * Sets the focus to the end of a text area.
+   * @param textArea 
+   */
+  focusOnTextArea(textArea: any): void{
+    // Here, we work some magic to make sure the cursor is not set back to the beginning of the textarea
+    // Inspired by this blog: https://thewebdev.info/2021/05/01/how-to-set-the-cursor-position-on-contenteditable-div-with-javascript/
+    const selection = window.getSelection();  
+    const range = document.createRange();  
+    selection?.removeAllRanges();  
+    range.selectNodeContents(textArea);  
+    range.collapse(false);  
+    selection?.addRange(range);  
+
+    // Finally, we focus on the textArea field
+    textArea.focus();
   }
 
 }
