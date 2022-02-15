@@ -250,6 +250,8 @@ export class CommentsComponent implements OnInit {
     // Add a space after the new span
     document.getElementById("new-comment-text-box-div")!.innerHTML += "&nbsp;";
 
+    // Set currentlyCheckingFor User to false 
+    this.currentlyCheckingForUser = false;
     // Hide the list of users
     this.hideListOfUsers();
 
@@ -310,19 +312,25 @@ export class CommentsComponent implements OnInit {
    */
   sortListOfusers(listOfUsers: Array<User>, textAreaValue: string): Array<User> {
     // Slice out the @ of the string
-    let splicedString = textAreaValue.slice(1);
+    //let splicedString = textAreaValue.slice(1);
+
+    // Find the index of the last @ symbol
+    let indexOfLastSymbol = this.findIndexOfLastMentionSymbol();
+
+    // Remove all of the characters from our search criteria up until the last @ symbol.
+    let modifiedString = textAreaValue.substring(indexOfLastSymbol + 1, textAreaValue.length)!;
 
     // Return filter the list of names for only the name that conain the letter
     let filteredArray = new Array;
     // For each character in the string...
-    for (let i=0; i < splicedString.length; i++) {
+    for (let i=0; i < modifiedString.length; i++) {
       //console.log(`Checking ${splicedString[i]}`);
       // Loop through each user...
       listOfUsers.forEach(user => {
         // If there are letters to check
         if (user.name[i]){
           // We compare the letters of both words. If they are the same...
-          if (user.name[i].toLowerCase() == splicedString[i].toLowerCase()) {
+          if (user.name[i].toLowerCase() == modifiedString[i].toLowerCase()) {
             // If the array does not already include the individual...
             if (!filteredArray.includes(user)) {
               // Add them to the array
@@ -361,7 +369,25 @@ export class CommentsComponent implements OnInit {
   removeUserTypedCharacters(): void {
     // Get the value from the text area
     let textAreaValue  = document.getElementById('new-comment-text-box-div')?.innerHTML as string;
+
+    // Find the index of the last @ symbol
+    let indexOfLastSymbol = this.findIndexOfLastMentionSymbol();
     
+    // Remove the last characters until the last @ sybmol
+    document.getElementById('new-comment-text-box-div')!.innerHTML=textAreaValue.substring(0,indexOfLastSymbol)!;
+  }
+
+
+  /**
+   * Finds and returns the index of the last @ symbol 
+   * in the text area. This is useful so we know where
+   * to look when the user is mentioning someone.
+   * @returns The index of the last @ symbol.
+   */
+  findIndexOfLastMentionSymbol(): number {
+    // Get the value from the text area
+    let textAreaValue  = document.getElementById('new-comment-text-box-div')?.innerHTML as string;
+
     // Find the index of the last @ symbol
     let indexOfLastSymbol = 0;
     for (let i=0; i<textAreaValue.length; i++) {
@@ -369,8 +395,10 @@ export class CommentsComponent implements OnInit {
         indexOfLastSymbol = i;
       }
     }
-    // Remove the last characters until the last @ sybmol
-    document.getElementById('new-comment-text-box-div')!.innerHTML=textAreaValue.substring(0,indexOfLastSymbol)!;
+    // Return the index of the last @ symbol
+    return indexOfLastSymbol;
   }
+
+  // TODO: Create a function to add punctuation after a mentioned name
 
 }
