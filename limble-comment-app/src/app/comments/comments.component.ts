@@ -104,10 +104,8 @@ export class CommentsComponent implements OnInit {
 
 
       default:
-        console.log("inside default method");
         // Check if there are no characters in the text area
         if (value.length == 0 || value == "<br>") {
-          console.log("if was triggered");
           // Remove the mentionSomeone menu
           this.hideListOfUsers();
           // Refocus on the text area
@@ -118,32 +116,19 @@ export class CommentsComponent implements OnInit {
 
         // If we are currently checking for a user
         else if (this.currentlyCheckingForUser) {
-          console.log("else if was triggered");
-          // If the user deleted a mention symbol...
-          if($event.key == "Backspace" && (value[value.length - 1] == "@")) {
-            // Remove the mentionSomeone menu
-            this.hideListOfUsers();
-            // Set currentlyCheckingForUser to false
-            this.currentlyCheckingForUser = false;
-            // If there is a <br> in the html
-            if (value =="<br>") {
-              // Remove the break
-              document.getElementById("new-comment-text-box-div")!.innerHTML = "";
-              // Refocus on the text are/
-              this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
-            }
-          }
           // Call the mentionSomeone() method if the user did not press the up or down arrow keys
-          else if ($event.key != "ArrowDown" && $event.key != "ArrowUp"){
-            console.log("else if was triggered");
+          if ($event.key != "ArrowDown" && $event.key != "ArrowUp" && value.includes("@")){
             // Set currentlyCheckingForUser to false so we grab a new list of individuals
             this.currentlyCheckingForUser = false;
             this.mentionSomeone();
           }
+          else{
+            this.currentlyCheckingForUser = false;
+            this.hideListOfUsers();
+          }
         }
         // If nothing else matches...
         else {
-          console.log("else was triggered");
           // Check if the user is deleting a mentioned username
           if (value[value.length - 2] == "n" && value[value.length - 1] == ">" && value[value.length - 3] == "a" ) {
             // Remove the mentioned username from the string
@@ -292,7 +277,7 @@ export class CommentsComponent implements OnInit {
   clickIndividualToMention($event: MouseEvent): void {
     // Grab the user name
     let value = (<HTMLInputElement>$event.target).textContent;
-
+    
     // Add them to the comment area
     this.addUserToTextArea(value!);
   }
@@ -353,30 +338,6 @@ export class CommentsComponent implements OnInit {
     textArea.focus();
   }
 
-
-  /**
-   * Checks if an innerHTML value contains a space &nbsp;
-   * @param value 
-   */
-  checkForSpace(value: string): boolean {
-    // Check if the last 6 digits of the string represent a space
-    if (
-      value[value.length - 1] == ";" &&
-      value[value.length - 2] == "p" &&
-      value[value.length - 3] == "s" &&
-      value[value.length - 4] == "b" &&
-      value[value.length - 5] == "n" &&
-      value[value.length - 6] == "&"
-      ) {
-        // If so, return true
-        return true;
-    }
-    else {
-      // Else, return false
-      return false;
-    }
-
-  }
 
   /**
    * Sorts the list of user according to the user input.
