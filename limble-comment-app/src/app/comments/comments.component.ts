@@ -13,7 +13,6 @@ import { User } from 'src/app/app-interfaces/user.interface';
 export class CommentsComponent implements OnInit {
 
   // PROPERTIES
-  spaceKeyRegEx: RegExp = /^\s+$/; // A regular expression used to track the space key
   commentsService: CommentsService; // // The comments service so we can update our comments
   showListOfUsers: boolean = false; // used to track if we should show the list of users so the user can mention someone
   showAddCommentSection: boolean = false; // Used to show/hide the Add New Comment section
@@ -21,6 +20,7 @@ export class CommentsComponent implements OnInit {
   users: Array<User> = []; // This is where the list of users are stored
   newCommentValue: string = ""; // Here, we keep track of the new comment value so we know what the user last typed
   justMentionedSomeone:boolean = false; // Used to track if the user just tried to mention someone using the mention button
+  currentlyCheckingForUser:boolean = false; // Used to track if we are currently checking for a user and should keep the menu open.
 
   constructor(commentsService: CommentsService) {
     // Create a commentService object so we can retrieve and add comments
@@ -66,33 +66,54 @@ export class CommentsComponent implements OnInit {
     
     // Get the last character the user typed
     let lastCharacterTyped = value[value.length - 1];
-
-    // If the last character typed is a @...
-    if (lastCharacterTyped == "@") {
-      // Call the mentionSomeone() method
-      this.mentionSomeone();
-    }
-
-    // Else, if the user typed a space or, if they erased everything
-    else if (/^\s+$/.test(lastCharacterTyped) || (value.length == 0)) {
-      // Remove the mentionSomeone menu
+    
+    // First, we check if the value contains an @
+    if (!value.includes("@")){
+      // If it doesn't, we remove the menu
+      this.currentlyCheckingForUser = false;
       this.hideListOfUsers();
       // Refocus on the text area
       this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
-      
     }
     else {
-      // Remove the mentionSomeone menu
-      this.hideListOfUsers();
-      // If there is a <br> in the html
-      if (value =="<br>") {
-        // Remove the break
-        document.getElementById("new-comment-text-box-div")!.innerHTML = "";
-        // Refocus on the text are/
-        this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
+      // Check if the user just typed a space
+      let userTypedSpace = this.checkForSpace(value);
+
+      // If the last character typed is a @...
+      // or if we are currently checking for a user...
+      // And we didn't just type a space...
+      if (value.length != 0 && lastCharacterTyped == "@" || (this.currentlyCheckingForUser && !userTypedSpace)) {
+        // Set currentlyCheckingForUser to false so we grab a new list of individuals
+        this.currentlyCheckingForUser = false;
+        // Call the mentionSomeone() method
+        this.mentionSomeone();
       }
+
+      // Else, if the user typed a space or, if they erased everything
+      else if (userTypedSpace || (value.length == 0)) {
+        // Remove the mentionSomeone menu
+        this.hideListOfUsers();
+        // Refocus on the text area
+        this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
+        // Set currentlyCheckingForUser to false
+        this.currentlyCheckingForUser = false;
+        
+      }
+      else {
+        // Remove the mentionSomeone menu
+        this.hideListOfUsers();
+        // Set currentlyCheckingForUser to false
+        this.currentlyCheckingForUser = false;
+        // If there is a <br> in the html
+        if (value =="<br>") {
+          // Remove the break
+          document.getElementById("new-comment-text-box-div")!.innerHTML = "";
+          // Refocus on the text are/
+          this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
+        }
+      }
+
     }
-     
   }
 
 
@@ -102,6 +123,9 @@ export class CommentsComponent implements OnInit {
    * Call the mention someone method.
    */
   addMentionSymbol(): void {
+    // Set currentlyCheckingForUser to false so we grab a new list of individuals
+    this.currentlyCheckingForUser = false;
+
     // Grab the last character typed
     let lastCharacterTyped = this.newCommentValue[this.newCommentValue.length - 1];
 
@@ -163,13 +187,22 @@ export class CommentsComponent implements OnInit {
    * TODO: Include a sort function to sort according to the user's input.
    */
   mentionSomeone(): void {
-    // Gets the list of users from the service
-    let listOfUsers = this.commentsService.getUsers();
-
-    // Add the list of users retrieved from the service to the list of users to display
-    this.users = listOfUsers;
+    // If we haven't started checking for a user...
+    if (!this.currentlyCheckingForUser) {
+      // Gets a new list of users from the service
+      this.users = this.commentsService.getUsers();
+    }
     
-    // TODO: Put a sort function here
+    // Set currentlyCheckingForUser to true
+    this.currentlyCheckingForUser = true;
+
+    // Check to see if we should sort the users by checking if the user typed anything after the @
+    const textAreaValue = document.getElementById("new-comment-text-box-div")!.innerHTML;
+    if (textAreaValue[textAreaValue.length - 1] != "@"){
+      // Call the sorting function.
+      // Update the list of users accordingly.
+      this.users = this.sortListOfusers(this.users, textAreaValue);
+    }
 
     // Now that we have the list of users, display them to the user
     this.showListOfUsers = true;
@@ -192,9 +225,8 @@ export class CommentsComponent implements OnInit {
    * @param $event 
    */
   chooseIndividualToMention($event: MouseEvent): void {
-    // Remove the previous @ symbol
-    let textAreaValue  = document.getElementById('new-comment-text-box-div')?.innerHTML as string;
-    document.getElementById('new-comment-text-box-div')!.innerHTML=textAreaValue.substring(0,textAreaValue.length -1)!;
+    // Remove the previous typed characters
+    this.removeUserTypedCharacters();
 
     // Grab the user name
     let value = (<HTMLInputElement>$event.target).textContent;
@@ -243,6 +275,102 @@ export class CommentsComponent implements OnInit {
 
     // Finally, we focus on the textArea field
     textArea.focus();
+  }
+
+
+  /**
+   * Checks if an innerHTML value contains a space &nbsp;
+   * @param value 
+   */
+  checkForSpace(value: string): boolean {
+    // Check if the last 6 digits of the string represent a space
+    if (
+      value[value.length - 1] == ";" &&
+      value[value.length - 2] == "p" &&
+      value[value.length - 3] == "s" &&
+      value[value.length - 4] == "b" &&
+      value[value.length - 5] == "n" &&
+      value[value.length - 6] == "&"
+      ) {
+        // If so, return true
+        return true;
+    }
+    else {
+      // Else, return false
+      return false;
+    }
+
+  }
+
+  /**
+   * Sorts the list of user according to the user input.
+   * @param listOfUsers 
+   * @param textAreaValue 
+   * @returns The filtered array of users.
+   */
+  sortListOfusers(listOfUsers: Array<User>, textAreaValue: string): Array<User> {
+    // Slice out the @ of the string
+    let splicedString = textAreaValue.slice(1);
+
+    // Return filter the list of names for only the name that conain the letter
+    let filteredArray = new Array;
+    // For each character in the string...
+    for (let i=0; i < splicedString.length; i++) {
+      //console.log(`Checking ${splicedString[i]}`);
+      // Loop through each user...
+      listOfUsers.forEach(user => {
+        // If there are letters to check
+        if (user.name[i]){
+          // We compare the letters of both words. If they are the same...
+          if (user.name[i].toLowerCase() == splicedString[i].toLowerCase()) {
+            // If the array does not already include the individual...
+            if (!filteredArray.includes(user)) {
+              // Add them to the array
+              filteredArray.push(user);
+            }
+          }
+          // Else, if they are not the same and the filtered array includes them...
+          else if (filteredArray.includes(user)) {
+            // Remove them from the array...
+            let newFilteredArray = filteredArray.filter(function(name: User){ 
+              return name != user;
+            });
+            filteredArray = newFilteredArray;
+          }
+
+        }
+        
+      });
+    }
+
+    // Log the new array to the console for testing purposes
+    /*
+    filteredArray.forEach(user => {
+      console.log(user.name);
+    });
+    */
+
+    // Return the sorted list
+    return filteredArray;
+  }
+
+  /**
+   * Called when the user selects a name to mention.
+   * Deletes everything the user typed up until the @ symbol.
+   */
+  removeUserTypedCharacters(): void {
+    // Get the value from the text area
+    let textAreaValue  = document.getElementById('new-comment-text-box-div')?.innerHTML as string;
+    
+    // Find the index of the last @ symbol
+    let indexOfLastSymbol = 0;
+    for (let i=0; i<textAreaValue.length; i++) {
+      if (textAreaValue[i] == "@"){
+        indexOfLastSymbol = i;
+      }
+    }
+    // Remove the last characters until the last @ sybmol
+    document.getElementById('new-comment-text-box-div')!.innerHTML=textAreaValue.substring(0,indexOfLastSymbol)!;
   }
 
 }
