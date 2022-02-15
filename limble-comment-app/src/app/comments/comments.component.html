@@ -23,13 +23,13 @@
     <div class="enter-text-div">
         <p class="comment-text"> Please enter what you would like to say</p>
         <!-- Custom text area -->
-        <div class="text-box-div" id="new-comment-text-box-div" contenteditable (keyup)="listenCommentInput($event)">
+        <div class="text-box-div" id="new-comment-text-box-div" contenteditable (keyup)="listenCommentInput($event)" (keydown)="navigateSubMenu($event)">
             
         </div>
         <!-- The menu that shows the list of users -->
-        <div class="user-list-div" *ngIf="showListOfUsers">
-            <ul *ngFor="let user of users" class="list-of-users">
-                <li class="user-item" (click)="chooseIndividualToMention($event)"> <img class="user-profile-image" src="../assets/user-image.png" width="20" alt="User Profile Image"> {{user.name}}</li>
+        <div class="user-list-div" id="user-list-div" *ngIf="showListOfUsers">
+            <ul *ngFor="let user of users" class="list-of-users" id="list-of-users">
+                <li class="user-item" (click)="clickIndividualToMention($event)"> <img class="user-profile-image" src="../assets/user-image.png" width="20" alt="User Profile Image"> {{user.name}}</li>
             </ul>
         </div>
     </div>

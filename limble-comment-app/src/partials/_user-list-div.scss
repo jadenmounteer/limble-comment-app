@@ -33,3 +33,15 @@
     font-weight: bold;
     color: #588ed3;
 }
+
+// Style the first user in the div as "selected" on default
+// This will change as the user navigates through the menu with the arrow keys
+.selected {
+    color: white;
+    background-color: $button-color-2;
+}
+
+.selected:hover {
+    color: white;
+    background-color: $button-color-2;
+}

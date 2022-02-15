@@ -58,6 +58,7 @@ export class CommentsComponent implements OnInit {
    * @param $event 
    */
    listenCommentInput($event: KeyboardEvent): void {
+
     // Grab the new comment value
     let value = (<HTMLInputElement>$event.target).innerHTML;
 
@@ -83,10 +84,15 @@ export class CommentsComponent implements OnInit {
       // or if we are currently checking for a user...
       // And we didn't just type a space...
       if (value.length != 0 && lastCharacterTyped == "@" || (this.currentlyCheckingForUser && !userTypedSpace)) {
-        // Set currentlyCheckingForUser to false so we grab a new list of individuals
-        this.currentlyCheckingForUser = false;
-        // Call the mentionSomeone() method
-        this.mentionSomeone();
+        
+        // Call the mentionSomeone() method if the user did not press the up or down arrow keys
+        if ($event.key != "ArrowDown" && $event.key != "ArrowUp"){
+          // Set currentlyCheckingForUser to false so we grab a new list of individuals
+          this.currentlyCheckingForUser = false;
+          this.mentionSomeone();
+
+        }
+        
       }
 
       // Else, if the user typed a space or, if they erased everything
@@ -207,6 +213,14 @@ export class CommentsComponent implements OnInit {
     // Now that we have the list of users, display them to the user
     this.showListOfUsers = true;
 
+    // By default, add the .selected class to the first user in the list
+    window.setTimeout(() => {
+      let userList = document.getElementsByClassName("user-item");
+      if (userList[0]){
+        userList[0].classList.add("selected");
+      }    
+    }, 100);
+    
   }
 
 
@@ -224,12 +238,21 @@ export class CommentsComponent implements OnInit {
    * Updates the properties accordingly. 
    * @param $event 
    */
-  chooseIndividualToMention($event: MouseEvent): void {
-    // Remove the previous typed characters
-    this.removeUserTypedCharacters();
-
+  clickIndividualToMention($event: MouseEvent): void {
     // Grab the user name
     let value = (<HTMLInputElement>$event.target).textContent;
+
+    // Add them to the comment area
+    this.addUserToTextArea(value!);
+  }
+
+  /**
+   * Called when the user selects a user to mention from the list.
+   * Creates a new span element and adds it to the HTML page.
+   */
+  addUserToTextArea(value: string): void {
+    // Remove the previous typed characters
+    this.removeUserTypedCharacters();
 
     // Trim the user name of leading and ending whitespace
     let trimmedValue = value?.trim();
@@ -257,7 +280,7 @@ export class CommentsComponent implements OnInit {
 
     // Focus on the text area
     this.focusOnTextArea(document.getElementById("new-comment-text-box-div")!);
-
+    
   }
 
 
@@ -400,5 +423,92 @@ export class CommentsComponent implements OnInit {
   }
 
   // TODO: Create a function to add punctuation after a mentioned name
+
+  /**
+   * Called when the user presses a a key and
+   * we are currently looking for someone to mention.
+   */
+  navigateSubMenu($event: KeyboardEvent): void{
+    // Check if the user typed Enter, ArrowUp, or ArrowDown and if we are currently checking for a user to mention.
+    if (this.currentlyCheckingForUser && ($event.key == "Enter" || $event.key == "ArrowUp" || $event.key == "ArrowDown")) {
+      // Grab the list of users
+      let userList = document.getElementsByClassName("user-item");
+
+      // Loop through the list of users.
+      // Find the index of the user with a class of selected
+      let indexOfSelectedUser = 0;
+      for (let i=0; i<userList.length; i++) {
+        if (userList[i].classList.contains("selected")){
+          indexOfSelectedUser = i;
+          break;
+        }
+      }
+
+      // Grab the selected user
+      let selectedUser = userList[indexOfSelectedUser];
+      // Declare a variable to house the index of the next user
+      let indexOfNextUser;
+
+      // Check the user input...
+      switch($event.key){
+        // If the user presses enter...
+        case "Enter":      
+          // Add the selected user to the text area
+          this.addUserToTextArea(selectedUser.textContent!);
+          break;
+        
+        // If the user pressed the down arrow
+        case "ArrowDown":
+          //console.log("User clicked down arrow");
+          // Remove the selected class from the selected user
+          selectedUser.classList.remove("selected");
+          // Grab the index of the next user
+          indexOfNextUser = indexOfSelectedUser + 1;
+          // If the next user does not exist...
+          if (indexOfNextUser >= userList.length) {
+            // Make the original item in the list selected
+            indexOfNextUser = 0;
+          }
+          // Add the selected class to the next user in the list
+          userList[indexOfNextUser].classList.add("selected");
+          // Update the index of the selected user
+          indexOfSelectedUser = indexOfNextUser;
+          break;
+
+        // If the user pressed the up arrow
+        case "ArrowUp":
+          // Remove the selected class from the selected user
+          selectedUser.classList.remove("selected");
+          // Grab the index of the next user
+          indexOfNextUser = indexOfSelectedUser - 1;
+          // If the next user does not exist...
+          if (indexOfNextUser < 0) {
+            // Make the original item in the list selected
+            indexOfNextUser = userList.length - 1;
+          }
+          // Add the selected class to the previous user in the list
+          userList[indexOfNextUser].classList.add("selected");
+          // Update the index of the selected user
+          indexOfSelectedUser = indexOfNextUser;
+          break;
+
+      }
+
+      // Scroll the user div accordingly
+      let coordinate = 0;
+      switch(indexOfSelectedUser) {
+        case userList.length - 1:
+          coordinate = 100;
+      }
+      document.getElementById("user-list-div")!.scrollTo({
+        top: coordinate,
+        behavior: "smooth"
+      });
+
+      // Make the key not do anything. This is so the user doesn't inadvertantly navigate the text area
+      $event.preventDefault();
+      
+    }
+  }
 
 }
