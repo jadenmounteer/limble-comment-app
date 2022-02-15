@@ -89,12 +89,18 @@ export class CommentsComponent implements OnInit {
       case "Enter":
         break;
 
+      case "ArrowUp":
+        break;
+      
+      case "ArrowDown":
+        break;
+        
       // If the user pressed Shift
       case "Shift":
 
         // Check if the last character in the value is @
         // Or if the user is typing in a div (as is the case when starting a new line)
-        if (value[value.length -1] == "@" || value[value.length -2] == "v"){
+        if (value[value.length -1] == "@" || (value[value.length -2] == "v" && value[value.length -5] == "@")){
           // Set currentlyCheckingForUser to false so we grab a new list of individuals
           this.currentlyCheckingForUser = false;
           // Call the mentionSomeone() method
@@ -104,8 +110,10 @@ export class CommentsComponent implements OnInit {
 
 
       default:
+        console.log("in default");
         // Check if there are no characters in the text area
         if (value.length == 0 || value == "<br>") {
+          console.log("logged");
           // Remove the mentionSomeone menu
           this.hideListOfUsers();
           // Refocus on the text area
@@ -117,11 +125,12 @@ export class CommentsComponent implements OnInit {
         // If we are currently checking for a user
         else if (this.currentlyCheckingForUser) {
           // Call the mentionSomeone() method if the user did not press the up or down arrow keys
-          if ($event.key != "ArrowDown" && $event.key != "ArrowUp" && value.includes("@")){
+          if (value.includes("@")){     
             // Set currentlyCheckingForUser to false so we grab a new list of individuals
             this.currentlyCheckingForUser = false;
             this.mentionSomeone();
           }
+          // if the user has erased all @ symbols...
           else{
             this.currentlyCheckingForUser = false;
             this.hideListOfUsers();
@@ -229,9 +238,12 @@ export class CommentsComponent implements OnInit {
     // Check to see if we should sort the users by checking if the user typed anything after the @
     const textAreaValue = document.getElementById("new-comment-text-box-div")!.innerHTML;
 
+    console.log(textAreaValue);
     if (textAreaValue[textAreaValue.length - 1] != "@"){
+      console.log("Looks like we're sorting");
       let shouldWeSort = true;
       // Now, let's check if we are on a new line and haven't started to type yet
+      console.log(textAreaValue[-2]);
       if (textAreaValue[textAreaValue.length - 2] == "v" && textAreaValue[textAreaValue.length - 7] == "@") {
         // Since we are on a new line and haven't typed yet, we don't want to sort quite yet
         shouldWeSort = false;
@@ -277,7 +289,7 @@ export class CommentsComponent implements OnInit {
   clickIndividualToMention($event: MouseEvent): void {
     // Grab the user name
     let value = (<HTMLInputElement>$event.target).textContent;
-    
+
     // Add them to the comment area
     this.addUserToTextArea(value!);
   }
